@@ -1,0 +1,57 @@
+services:
+
+  db:
+    image: postgres:16
+
+    container_name: postgres-db
+
+    restart: always
+
+    env_file:
+      - .env
+
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build:
+      context: ./backend
+
+    container_name: flask-backend
+
+    restart: always
+
+    env_file:
+      - .env
+
+    depends_on:
+      - db
+
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: frontend
+
+    restart: always
+
+    depends_on:
+      - backend
+
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres_data:

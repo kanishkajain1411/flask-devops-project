@@ -9,37 +9,27 @@ pipeline {
             }
         }
 
-        stage('Build Image') {
+        stage('Check Docker Compose') {
             steps {
-                sh 'docker build -t flask-app .'
+                sh 'docker compose version'
             }
         }
 
-        stage('Tag Image') {
+        stage('Stop Old Containers') {
             steps {
-                sh 'docker tag flask-app kanishkajain1411/flask-app:latest'
+                sh 'docker compose down || true'
             }
         }
 
-        stage('Push Image') {
+        stage('Build & Deploy') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh '''
-                    echo $PASS | docker login -u $USER --password-stdin
-                    docker push kanishkajain1411/flask-app:latest
-                    '''
-                }
+                sh 'docker compose up -d --build'
             }
         }
 
-        stage('Deploy') {
+        stage('Verify') {
             steps {
-                sh '''
-                docker pull kanishkajain1411/flask-app:latest
-                docker stop flask-app || true
-                docker rm flask-app || true
-                docker run -d -p 5000:5000 --name flask-app kanishkajain1411/flask-app:latest
-                '''
+                sh 'docker ps'
             }
         }
     }

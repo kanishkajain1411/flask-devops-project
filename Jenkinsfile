@@ -9,19 +9,23 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Image') {
             steps {
-                echo 'Building project...'
                 sh 'docker build -t flask-app .'
+            }
+        }
+
+        stage('Tag Image') {
+            steps {
+                sh 'docker tag flask-app kanishkajain1411/flask-app:latest'
             }
         }
 
         stage('Push to DockerHub') {
             steps {
                 sh '''
-                docker login -u your-dockerhub-username -p your-password
-                docker tag flask-app your-dockerhub-username/flask-app:latest
-                docker push your-dockerhub-username/flask-app:latest
+                echo "LOGIN FIRST MANUALLY or use credentials in Jenkins"
+                docker push kanishkajain1411/flask-app:latest
                 '''
             }
         }
@@ -29,10 +33,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                docker pull your-dockerhub-username/flask-app:latest
+                docker pull kanishkajain1411/flask-app:latest
                 docker stop flask-app || true
                 docker rm flask-app || true
-                docker run -d -p 5000:5000 --name flask-app your-dockerhub-username/flask-app:latest
+                docker run -d -p 5000:5000 --name flask-app kanishkajain1411/flask-app:latest
                 '''
             }
         }

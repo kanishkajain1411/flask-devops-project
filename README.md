@@ -7,3 +7,6 @@ Flask + PostgreSQL + Docker + AWS + Jenkins
 /
  /health
  /api/users
+
+## CI/CD Test
+CI/CD test commit - Jenkins trigger check

@@ -21,12 +21,14 @@ pipeline {
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Push Image') {
             steps {
-                sh '''
-                echo "LOGIN FIRST MANUALLY or use credentials in Jenkins"
-                docker push kanishkajain1411/flask-app:latest
-                '''
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                    echo $PASS | docker login -u $USER --password-stdin
+                    docker push kanishkajain1411/flask-app:latest
+                    '''
+                }
             }
         }
 

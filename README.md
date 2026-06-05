@@ -10,3 +10,5 @@ Flask + PostgreSQL + Docker + AWS + Jenkins
 
 ## CI/CD Test
 CI/CD test commit - Jenkins trigger check
+
+test auto trigger
